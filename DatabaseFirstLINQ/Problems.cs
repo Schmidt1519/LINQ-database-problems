@@ -302,13 +302,17 @@ namespace DatabaseFirstLINQ
 
             var user = _context.Users.Where(user => user.Email == $"{email}").SingleOrDefault();
 
-            if(user.Password == password)
+            try
             {
-                Console.WriteLine("Signed In!");
+                if (user.Email == email && user.Password == password)
+                {
+                    Console.WriteLine("Signed In!");
+                }
             }
-            else {
-                Console.WriteLine("Invalid Email or Password.");   
-            }  
+            catch
+            {
+                Console.WriteLine("Invalid Email or Password.");
+            }
         }
 
         private void BonusTwo()
