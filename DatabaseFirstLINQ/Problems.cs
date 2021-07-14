@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DatabaseFirstLINQ.Models;
+using System.Collections.Generic;
 
 namespace DatabaseFirstLINQ
 {
@@ -35,7 +36,9 @@ namespace DatabaseFirstLINQ
             //ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
-            BonusOne();
+            //BonusOne();
+            BonusTwo();
+            //BonusThree();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -93,7 +96,7 @@ namespace DatabaseFirstLINQ
 
             foreach (var userDate in userBeforeDate)
             {
-                Console.WriteLine(userDate.Email + " " + userDate.RegistrationDate);
+                Console.WriteLine(userDate.Email + " - " + userDate.RegistrationDate);
             }
         }
 
@@ -109,7 +112,7 @@ namespace DatabaseFirstLINQ
 
             foreach (var date in userDate)
             {
-                Console.WriteLine(date.Email + " " + date.RegistrationDate);
+                Console.WriteLine(date.Email + " - " + date.RegistrationDate);
             }
         }
 
@@ -139,14 +142,14 @@ namespace DatabaseFirstLINQ
 
         private void ProblemNine()
         {
-            // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "oda@gmail.com" and returns the sum of all of the products prices.
+            // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "oda@gmail.com" and returns the sum
+            // of all of the products prices.
             // HINT: End of query will be: .Select(sc => sc.Product.Price).Sum();
             // Then print the total of the shopping cart to the console.
             var cartTotal = _context.ShoppingCarts.Include(user => user.User).Include(user => user.Product)
                 .Where(user => user.User.Email == "oda@gmail.com").Select(sc => sc.Product.Price).Sum();
             { Console.WriteLine("$" + cartTotal);
             }
-
         }
 
         private void ProblemTen()
@@ -158,7 +161,7 @@ namespace DatabaseFirstLINQ
 
             foreach (var product in employeeCart)
             {
-                Console.WriteLine(product.User.Email + " " + product.Product.Name + " " + product.Product.Price + " " + product.Quantity);
+                Console.WriteLine(product.User.Email + " - " + product.Product.Name + " - $" + product.Product.Price + " - " + product.Quantity);
             }
 
         }
@@ -318,9 +321,28 @@ namespace DatabaseFirstLINQ
         private void BonusTwo()
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
-            // Display the total of each users shopping cart as well as the total of the toals to the console.
-        }
+            // Display the total of each users shopping cart, as well as the total of the totals to the console.
 
+            List<int> userId = _context.Users.Select(sc => sc.Id).ToList();
+ 
+            decimal? allUsers = 0;
+
+            foreach (int id in userId)
+            {
+                var carts = _context.ShoppingCarts.Where(user => user.User.Id == id).Select(sc => new { sc.Product.Price, sc.Quantity });
+
+                decimal? total = 0;
+
+                foreach (var product in carts)
+                {
+                    total += product.Price * product.Quantity;
+                }
+                Console.WriteLine($"User ID {id}'s shopping cart totals ${total}");
+                allUsers += total;
+            }
+                Console.WriteLine($"All users shopping carts total ${allUsers}");
+        }
+        
         // BIG ONE
         private void BonusThree()
         {
@@ -331,7 +353,7 @@ namespace DatabaseFirstLINQ
             // View all products in the Products table
             // Add a product to the shopping cart (incrementing quantity if that product is already in their shopping cart)
             // Remove a product from their shopping cart
-            // 3. If the user does not succesfully sing in
+            // 3. If the user does not succesfully sign in
             // a. Display "Invalid Email or Password"
             // b. Re-prompt the user for credentials
 
